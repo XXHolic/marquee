@@ -8,7 +8,7 @@ module.exports = {
   plugins: [
     new CleanWebpackPlugin(),
     new HtmlWebpackPlugin({
-      title: "marquee"
+      template: path.resolve(basePath, "public/index.html")
     }),
   ],
   optimization: {
