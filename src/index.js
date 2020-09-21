@@ -1,4 +1,4 @@
 import marquee from './marquee'
 
 
-marquee();
+marquee({duplicated:true});

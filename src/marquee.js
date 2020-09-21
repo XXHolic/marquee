@@ -6,7 +6,7 @@ const defaultOptions = {
   timing: 'linear',
   delayBeforeStart: 0,
   className:'',
-  duplicated: false,
+  duplicated: false, // 收尾衔接无空隙循环
   startVisible: false
 }
 
@@ -38,16 +38,26 @@ const getPrefix = () => {
   return prefix;
 }
 
+const prefixedEvent = function(element, type, callback) {
+  var pfx = ["webkit", "moz", "MS", "o", ""];
+  for (var p = 0; p < pfx.length; p++) {
+      if (!pfx[p]) type = type.toLowerCase();
+      element.addEventListener(pfx[p] + type, callback, false);
+  }
+}
+
 const marquee = (params={}) => {
-  const options = {...params,...defaultOptions};
+  const options = {...defaultOptions,...params};
   const { className,gap,duration,timing,delayBeforeStart,duplicated } = options;
+
+  const itemGap = duplicated ? parseInt(gap,10):0;
   const randomId = uuidv4();
   const target = document.querySelector('.example');
   const targetWidth = parseInt(target.offsetWidth,10);
 
   const parentId = `marquee-${randomId}`;
   const parentEle = wrapInElement(parentId,target);
-  const parentStyle = `margin-right:${gap}px;float:left;`
+  const parentStyle = `margin-right:${itemGap}px;float:left;-webkit-backface-visibility: hidden;backface-visibility: hidden;`
   parentEle.setAttribute('style',parentStyle);
 
 
@@ -55,35 +65,73 @@ const marquee = (params={}) => {
   const wrapId = `marquee-wrap-${randomId}`;
   const wrapEle = wrapInElement(wrapId,parentEle,true);
   wrapEle.setAttribute('class',className);
+
   if (duplicated) {
-    wrapEle.appendChild(parentEle.cloneNode())
+    wrapEle.appendChild(parentEle.cloneNode(true))
   }
-  let styleStr = 'overflow:hidden;width: 100000px;'
+
   target.innerHTML = '';
   target.appendChild(wrapEle);
 
-  const parentWidth = parseInt(parentEle.offsetWidth,10);
-  const animationTime = parseInt(((targetWidth + parentWidth)/targetWidth)*duration/1000,10);
-  const animationDelayTime = parseInt(delayBeforeStart/1000,10);
-  // const animationName = `animation-${randomId}`;
-  const animationName = `animation1`;
-  if (target.style.animation!== undefined) {
-    const prefix = getPrefix();
-    const moveDistance = parentWidth + gap;
-    let keyframeStr = `@${prefix}keyframes ${animationName} { 100% {transform: translateX(-${moveDistance}px)} }`;
-    const styleEle = document.createElement('style');
-    styleEle.innerHTML = keyframeStr;
-    document.head.appendChild(styleEle);
 
-    const animationStr = `${prefix}animation: ${animationName} ${animationTime}s ${animationDelayTime}s ${timing} infinite;`;
-    styleStr = `${styleStr}${animationStr}`;
-    if (!duplicated) {
-      const wrapTranslate = `transform: translateX(${targetWidth}px)`
+  const parentWidth = parseInt(parentEle.offsetWidth,10);
+  let animationTime = ((targetWidth + parentWidth)/targetWidth)*duration;
+  if (duplicated) {
+    animationTime = animationTime/2;
+  }
+  let animationDelayTime = parseInt(delayBeforeStart/1000,10);
+  let animationName = `animation-${randomId}`;
+
+  // const animationName = `animation1`;
+  if (target.style.animation!== undefined) {
+    let originDuration = animationTime;
+    let animationCount = 'infinite';
+    const setAnima = (isEnd) => {
+      console.log('run~')
+      let styleStr = 'overflow:hidden;width: 100000px;'
+      const prefix = getPrefix();
+      const moveDistance = parentWidth + itemGap;
+      if (!isEnd) {
+        let keyframeStr = `@${prefix}keyframes ${animationName} { 100% {transform: translateX(-${moveDistance}px)} }`;
+        const styleEle = document.createElement('style');
+        styleEle.innerHTML = keyframeStr;
+        document.head.appendChild(styleEle);
+      }
+
+      if (duplicated) {
+        // debugger
+        animationTime = animationTime + (targetWidth / (parentWidth/animationTime));
+        animationCount = 1;
+      }
+      if (isEnd) {
+        animationTime = originDuration;
+        animationCount = 'infinite';
+      }
+      const animationDuration = parseInt(animationTime/1000,10);
+      const animationStr = `${prefix}animation: ${animationName} ${animationDuration}s ${animationDelayTime}s ${timing} ${animationCount};`;
+      styleStr = `${styleStr}${animationStr}`;
+
+      let wrapTranslateNum = targetWidth;
+      if (isEnd) {
+        wrapTranslateNum = 0;
+      }
+      const wrapTranslate = `transform: translateX(${wrapTranslateNum}px);-webkit-backface-visibility: hidden;backface-visibility: hidden;`
       styleStr = `${styleStr}${wrapTranslate}`;
-    } else {
+      wrapEle.style = styleStr;
+
+      prefixedEvent(wrapEle, "AnimationEnd", function() {
+        setAnima(true);
+      });
+
 
     }
-    wrapEle.style = styleStr;
+
+    setAnima();
+
+    // if (!duplicated) {
+    // } else {
+
+    // }
 
 
   }
