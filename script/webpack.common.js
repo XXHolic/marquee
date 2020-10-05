@@ -4,7 +4,7 @@ const {CleanWebpackPlugin} = require("clean-webpack-plugin");
 const basePath = path.dirname(__dirname);
 
 module.exports = {
-  entry: path.resolve(basePath, "src/index.js"),
+  entry: path.resolve(basePath, "src/index.ts"),
   plugins: [
     new CleanWebpackPlugin(),
     new HtmlWebpackPlugin({
@@ -26,12 +26,17 @@ module.exports = {
   module: {
     rules: [
       {
-        test: /\.m?js$/,
-        exclude: /(node_modules)/,
+        test: /\.tsx?$/,
+        use: 'ts-loader',
+        exclude: /node_modules/,
+      },
+      {
+        test: /\.m?(ts|js)$/,
+        exclude: /node_modules/,
         use: {
           loader: "babel-loader",
           options: {
-            presets: [["@babel/preset-env",{"targets": "> 0.25%, not dead"}]],
+            presets: [["@babel/preset-env",{"targets": "> 0.25%, not dead"}],"@babel/preset-typescript"],
             plugins: [
               "@babel/plugin-transform-runtime",
               "@babel/plugin-transform-arrow-functions",
@@ -41,6 +46,9 @@ module.exports = {
         }
       },
     ]
+  },
+  resolve:{
+    extensions: [ '.tsx', '.ts', '.js' ],
   },
   output: {
     filename: "[name].[hash].js",

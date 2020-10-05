@@ -57,7 +57,8 @@ const marquee = (params={}) => {
 
   const parentId = `marquee-${randomId}`;
   const parentEle = wrapInElement(parentId,target);
-  const parentStyle = `margin-right:${itemGap}px;float:left;-webkit-backface-visibility: hidden;backface-visibility: hidden;`
+  // const parentStyle = `margin-right:${itemGap}px;float:left;-webkit-backface-visibility: hidden;backface-visibility: hidden;`
+  const parentStyle = `margin-right:${itemGap}px;`
   parentEle.setAttribute('style',parentStyle);
 
 
@@ -74,7 +75,9 @@ const marquee = (params={}) => {
   target.appendChild(wrapEle);
 
 
-  const parentWidth = parseInt(parentEle.offsetWidth,10);
+  // const parentWidth = parseInt(parentEle.offsetWidth,10);
+  const parentWidth = parseInt(412,10);
+  console.log('parentWidth',parentWidth)
   let animationTime = ((targetWidth + parentWidth)/targetWidth)*duration;
   if (duplicated) {
     animationTime = animationTime/2;
@@ -88,7 +91,7 @@ const marquee = (params={}) => {
     let animationCount = 'infinite';
     const setAnima = (isEnd) => {
       console.log('run~')
-      let styleStr = 'overflow:hidden;width: 100000px;'
+      let styleStr = 'overflow:hidden;width: 100000px;display:flex;justify-content:flex-start;'
       const prefix = getPrefix();
       const moveDistance = parentWidth + itemGap;
       if (!isEnd) {
@@ -108,14 +111,15 @@ const marquee = (params={}) => {
         animationCount = 'infinite';
       }
       const animationDuration = parseInt(animationTime/1000,10);
-      const animationStr = `${prefix}animation: ${animationName} ${animationDuration}s ${animationDelayTime}s ${timing} ${animationCount};`;
+      // 使用 fill-mode 来控制第一次顺序后的状态，切换会更加可控无感知
+      const animationStr = `${prefix}animation: ${animationName} ${animationDuration}s ${animationDelayTime}s ${timing} ${animationCount} forwards;`;
       styleStr = `${styleStr}${animationStr}`;
 
       let wrapTranslateNum = targetWidth;
       if (isEnd) {
         wrapTranslateNum = 0;
       }
-      const wrapTranslate = `transform: translateX(${wrapTranslateNum}px);-webkit-backface-visibility: hidden;backface-visibility: hidden;`
+      const wrapTranslate = `transform: translateX(${wrapTranslateNum}px);`
       styleStr = `${styleStr}${wrapTranslate}`;
       wrapEle.style = styleStr;
 
