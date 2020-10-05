@@ -1,1 +1,3 @@
-console.log('ok')
+import Marquee from './marquee'
+
+new Marquee({})

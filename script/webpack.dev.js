@@ -8,6 +8,7 @@ module.exports = merge(common, {
     hot: true,
   },
   stats: "errors-only",
+  devtool: 'eval-source-map',
   module: {
     // rules: [
 

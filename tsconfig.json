@@ -2,12 +2,15 @@
   "extends": "@tsconfig/recommended/tsconfig.json",
   "compilerOptions": {
     "outDir": "./dist/",
-    "noImplicitAny": true,
+    "noImplicitAny": false,
+    "noImplicitThis": false,
     "module": "es6",
     "target": "es5",
     "jsx": "react",
     "allowJs": true,
-    "sourceMap": true
+    "sourceMap": true,
+    "moduleResolution":"node",
+    "strict": false,
   },
   "include": [
     "src/**/*.ts"

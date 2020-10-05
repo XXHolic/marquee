@@ -30,21 +30,22 @@ module.exports = {
         use: 'ts-loader',
         exclude: /node_modules/,
       },
-      {
-        test: /\.m?(ts|js)$/,
-        exclude: /node_modules/,
-        use: {
-          loader: "babel-loader",
-          options: {
-            presets: [["@babel/preset-env",{"targets": "> 0.25%, not dead"}],"@babel/preset-typescript"],
-            plugins: [
-              "@babel/plugin-transform-runtime",
-              "@babel/plugin-transform-arrow-functions",
-              "@babel/plugin-syntax-dynamic-import",
-            ]
-          }
-        }
-      },
+      // {
+      //   test: /\.m?(ts|js)$/,
+      //   exclude: /node_modules/,
+      //   use: {
+      //     loader: "babel-loader",
+      //     options: {
+      //       presets: ["@babel/preset-typescript"],
+      //       plugins: [
+      //         "@babel/plugin-transform-runtime",
+      //         "@babel/plugin-transform-arrow-functions",
+      //         "@babel/plugin-syntax-dynamic-import",
+      //         "@babel/plugin-proposal-class-properties"
+      //       ]
+      //     }
+      //   }
+      // },
     ]
   },
   resolve:{
